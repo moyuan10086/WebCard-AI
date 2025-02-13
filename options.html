@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>CursorRules 设置</title>
+  <style>
+    body {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .container {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 32px;
+    }
+    .section h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #444;
+    }
+    .input-group {
+      position: relative;
+    }
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+      font-size: 14px;
+    }
+    .tip {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #357abd;
+    }
+    .status {
+      margin-top: 16px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .model-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .model-option {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .model-option:hover {
+      border-color: #4a90e2;
+      background: #f8f9fa;
+    }
+    .model-option.active {
+      border-color: #4a90e2;
+      background: #e8f0fe;
+    }
+    .model-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .model-desc {
+      font-size: 12px;
+      color: #666;
+    }
+    .model-option.custom {
+      border-style: dashed;
+    }
+    .model-option.custom:hover {
+      background: #f8f9fa;
+      border-style: solid;
+    }
+    .model-option.custom.active {
+      background: #e8f0fe;
+      border-style: solid;
+    }
+    #customModelSettings {
+      margin-top: 16px;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    #customModelSettings .form-group:last-child {
+      margin-bottom: 0;
+    }
+    #otherProviderSettings {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="section">
+      <h2>API 设置</h2>
+      <div class="form-group">
+        <label for="apiProvider">API 提供商</label>
+        <select id="apiProvider">
+          <option value="openai">OpenAI</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="custom">自定义供应商</option>
+        </select>
+        <div class="tip">选择您使用的 API 服务提供商</div>
+      </div>
+
+      <div id="providerSettings">
+        <!-- OpenAI 设置 -->
+        <div class="provider-setting" data-provider="openai">
+          <div class="form-group">
+            <label for="openaiApiKey">API Key</label>
+            <div class="input-group">
+              <input type="password" id="openaiApiKey" placeholder="sk-...">
+              <span class="toggle-password">显示</span>
+            </div>
+            <div class="tip">从 OpenAI 获取的 API Key</div>
+          </div>
+          <div class="form-group">
+            <label for="openaiBaseUrl">API 地址</label>
+            <input type="text" id="openaiBaseUrl" value="https://api.openai.com" placeholder="https://api.openai.com">
+            <div class="tip">可选，如果使用代理服务请修改</div>
+          </div>
+          <div class="form-group">
+            <label for="openaiModel">自定义模型</label>
+            <input type="text" id="openaiModel" placeholder="例如: gpt-4-32k">
+            <div class="tip">可选，留空使用默认模型</div>
+          </div>
+        </div>
+
+        <!-- DeepSeek 设置 -->
+        <div class="provider-setting" data-provider="deepseek">
+          <div class="form-group">
+            <label for="deepseekApiKey">API Key</label>
+            <div class="input-group">
+              <input type="password" id="deepseekApiKey" placeholder="输入 DeepSeek API Key">
+              <span class="toggle-password">显示</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="deepseekBaseUrl">API 地址</label>
+            <input type="text" id="deepseekBaseUrl" value="https://api.deepseek.com" placeholder="https://api.deepseek.com">
+          </div>
+          <div class="form-group">
+            <label for="deepseekModel">自定义模型</label>
+            <input type="text" id="deepseekModel" placeholder="例如: deepseek-chat">
+            <div class="tip">可选，留空使用默认模型</div>
+          </div>
+        </div>
+
+        <!-- 自定义供应商设置 -->
+        <div class="provider-setting" data-provider="custom">
+          <div class="form-group">
+            <label for="customProviderName">供应商名称</label>
+            <input type="text" id="customProviderName" placeholder="例如: Azure OpenAI">
+          </div>
+          <div class="form-group">
+            <label for="customApiKey">API Key</label>
+            <div class="input-group">
+              <input type="password" id="customApiKey" placeholder="输入 API Key">
+              <span class="toggle-password">显示</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="customBaseUrl">API 地址</label>
+            <input type="text" id="customBaseUrl" placeholder="输入完整的 API 地址">
+          </div>
+          <div class="form-group">
+            <label for="customModel">模型名称</label>
+            <input type="text" id="customModel" placeholder="输入模型标识符">
+          </div>
+          <div class="form-group">
+            <label for="customEndpoint">API 端点</label>
+            <input type="text" id="customEndpoint" value="/v1/chat/completions" placeholder="/v1/chat/completions">
+            <div class="tip">API请求路径，通常是 /v1/chat/completions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>模型设置</h2>
+      <div class="form-group">
+        <label>选择语言模型</label>
+        <div class="model-options">
+          <!-- OpenAI 模型 -->
+          <div class="model-group" data-provider="openai">
+            <div class="model-option" data-model="gpt-4o-mini">
+              <div class="model-name">GPT-4O Mini</div>
+              <div class="model-desc">适合大多数场景，速度快，成本低</div>
+            </div>
+            <div class="model-option" data-model="gpt-4o">
+              <div class="model-name">GPT-4O</div>
+              <div class="model-desc">更强的理解能力，适合复杂内容</div>
+            </div>
+            <div class="model-option" data-model="o1-mini">
+              <div class="model-name">O1 Mini</div>
+              <div class="model-desc">最新的O1系列模型，性能优异</div>
+            </div>
+          </div>
+
+          <!-- DeepSeek 模型 -->
+          <div class="model-group" data-provider="deepseek">
+            <div class="model-option" data-model="deepseek-chat">
+              <div class="model-name">DeepSeek Chat</div>
+              <div class="model-desc">DeepSeek 基础对话模型</div>
+            </div>
+            <div class="model-option" data-model="deepseek-reasoner">
+              <div class="model-name">DeepSeek Reasoner</div>
+              <div class="model-desc">增强的推理能力，适合复杂任务</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="maxTokens">最大输出长度</label>
+        <select id="maxTokens">
+          <option value="150">简短 (约150字)</option>
+          <option value="300" selected>适中 (约300字)</option>
+          <option value="500">详细 (约500字)</option>
+          <option value="1000">长文本 (约1000字)</option>
+        </select>
+        <div class="tip">控制AI总结的输出长度</div>
+      </div>
+
+      <div class="form-group">
+        <label for="temperature">创造性程度</label>
+        <select id="temperature">
+          <option value="0.2">保守 (更准确)</option>
+          <option value="0.5" selected>平衡</option>
+          <option value="0.8">创造 (更多样)</option>
+        </select>
+        <div class="tip">控制AI输出的多样性，值越高创造性越强</div>
+      </div>
+
+      <div id="customModelSettings" class="form-group" style="display: none;">
+        <div class="form-group">
+          <label for="customModelName">模型名称</label>
+          <input type="text" id="customModelName" placeholder="例如: gpt-4-32k">
+          <div class="tip">输入完整的模型标识符</div>
+        </div>
+        <div class="form-group">
+          <label for="customModelProvider">模型提供商</label>
+          <select id="customModelProvider">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <div id="otherProviderSettings" class="form-group" style="display: none;">
+          <label for="customProviderName">提供商名称</label>
+          <input type="text" id="customProviderName" placeholder="输入提供商名称">
+        </div>
+      </div>
+    </div>
+
+    <button id="saveButton">保存设置</button>
+    <div id="status" class="status" style="display: none;"></div>
+  </div>
+
+  <script src="scripts/options.js"></script>
+</body>
+</html> 

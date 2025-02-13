@@ -1,0 +1,85 @@
+.card-generator-button {
+  position: absolute;
+  z-index: 999999;
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.card-generator-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-generator-button img {
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s ease;
+}
+
+/* 加载状态 */
+.card-generator-button.loading {
+  pointer-events: none;
+  animation: spin 1s linear infinite;
+}
+
+.card-generator-button.loading img {
+  opacity: 0.5;
+}
+
+/* 成功状态 */
+.card-generator-button.success {
+  background: #28a745;
+  pointer-events: none;
+}
+
+.card-generator-button.success img {
+  filter: brightness(0) invert(1);
+}
+
+/* 错误状态 */
+.card-generator-button.error {
+  background: #dc3545;
+  pointer-events: none;
+}
+
+.card-generator-button.error img {
+  filter: brightness(0) invert(1);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 卡片预览基础样式 */
+.card-preview {
+  width: 600px;
+  overflow: hidden;
+}
+
+.card-preview .website-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-preview .website-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.card-preview .card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+} 

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页卡片生成器</title>
+    <link rel="stylesheet" href="styles/fonts.css">
+    <link href="styles/card-generator.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧设置面板 -->
+        <div class="settings-panel">
+            <h2>卡片设置</h2>
+            
+            <!-- 模板选择 -->
+            <div class="setting-section">
+                <h3>主题风格</h3>
+                <div class="template-options">
+                    <div class="template-option" data-template="simple">
+                        <div class="template-preview">
+                            <div class="preview-content">
+                                <div class="preview-header"></div>
+                                <div class="preview-body">
+                                    <div class="preview-line"></div>
+                                    <div class="preview-line"></div>
+                                </div>
+                                <div class="preview-footer"></div>
+                            </div>
+                        </div>
+                        <span class="template-name">简约</span>
+                    </div>
+                    <div class="template-option" data-template="vintage">
+                        <div class="template-preview">
+                            <div class="preview-content vintage">
+                                <div class="preview-header"></div>
+                                <div class="preview-body">
+                                    <div class="preview-line"></div>
+                                    <div class="preview-line"></div>
+                                </div>
+                                <div class="preview-footer"></div>
+                            </div>
+                        </div>
+                        <span class="template-name">复古</span>
+                    </div>
+                    <div class="template-option" data-template="modern">
+                        <div class="template-preview">
+                            <div class="preview-content modern">
+                                <div class="preview-header"></div>
+                                <div class="preview-body">
+                                    <div class="preview-line"></div>
+                                    <div class="preview-line"></div>
+                                </div>
+                                <div class="preview-footer"></div>
+                            </div>
+                        </div>
+                        <span class="template-name">现代</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 背景设置 -->
+            <div class="setting-section">
+                <h3>背景设置</h3>
+                <div class="background-options">
+                    <div class="color-options">
+                        <h4>纯色背景</h4>
+                        <div class="color-grid">
+                            <div class="color-item" data-color="#FFFFFF" title="纯白">
+                                <div class="color-preview"></div>
+                            </div>
+                            <div class="color-item" data-color="#F8F6F0" title="米白">
+                                <div class="color-preview"></div>
+                            </div>
+                            <div class="color-item" data-color="#E8F4F2" title="淡青">
+                                <div class="color-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gradient-options">
+                        <h4>渐变背景</h4>
+                        <div class="gradient-grid">
+                            <div class="gradient-item" data-gradient="暖阳">
+                                <div class="gradient-preview"></div>
+                            </div>
+                            <div class="gradient-item" data-gradient="清新">
+                                <div class="gradient-preview"></div>
+                            </div>
+                            <div class="gradient-item" data-gradient="梦幻">
+                                <div class="gradient-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="custom-background">
+                        <h4>自定义背景</h4>
+                        <label for="bgImageUpload" class="upload-label">
+                            <span class="upload-icon">+</span>
+                            <span class="upload-text">点击上传图片</span>
+                        </label>
+                        <input type="file" id="bgImageUpload" accept="image/*">
+                        <p class="tip">支持JPG、PNG格式，建议尺寸1200×800px</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 字体设置 -->
+            <div class="setting-section">
+                <h3>字体设置</h3>
+                <select id="fontFamily">
+                    <option value="default">默认字体</option>
+                    <option value="songti">宋体</option>
+                    <option value="kaiti">楷体</option>
+                    <option value="heiti">黑体</option>
+                    <option value="yuanti">圆体</option>
+                    <option value="fangsong">仿宋</option>
+                </select>
+                
+                <!-- 添加字体颜色选择 -->
+                <div class="font-color-options">
+                    <h4>字体颜色</h4>
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#333333" title="深灰">
+                            <div class="color-preview"></div>
+                        </div>
+                        <div class="color-item" data-color="#2c1810" title="棕褐">
+                            <div class="color-preview"></div>
+                        </div>
+                        <div class="color-item" data-color="#1a1a1a" title="黑色">
+                            <div class="color-preview"></div>
+                        </div>
+                        <div class="color-item" data-color="#0066cc" title="蓝色">
+                            <div class="color-preview"></div>
+                        </div>
+                        <div class="color-item" data-color="#006633" title="绿色">
+                            <div class="color-preview"></div>
+                        </div>
+                        <div class="color-item" data-color="#993366" title="紫色">
+                            <div class="color-preview"></div>
+                        </div>
+                    </div>
+                    <!-- 自定义颜色选择器 -->
+                    <div class="custom-color">
+                        <input type="color" id="customFontColor" value="#333333">
+                        <label for="customFontColor">自定义颜色</label>
+                    </div>
+                </div>
+                
+                <div class="text-align-options">
+                    <button data-align="left">左对齐</button>
+                    <button data-align="center">居中</button>
+                    <button data-align="right">右对齐</button>
+                </div>
+            </div>
+
+            <!-- 导出设置 -->
+            <div class="setting-section">
+                <h3>导出设置</h3>
+                <select id="exportFormat">
+                    <option value="png">PNG</option>
+                    <option value="jpg">JPG</option>
+                    <option value="webp">WEBP</option>
+                    <option value="pdf">PDF</option>
+                </select>
+                <select id="exportQuality">
+                    <option value="high">高质量</option>
+                    <option value="medium">中等质量</option>
+                    <option value="low">低质量</option>
+                </select>
+                <div class="button-group">
+                    <button id="exportButton">导出卡片</button>
+                </div>
+                <div class="button-group">
+                    <button id="copyImageButton" title="复制卡片图片到剪贴板">复制图片</button>
+                    <button id="copyTextButton" title="复制卡片文本到剪贴板">复制文本</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧预览面板 -->
+        <div class="preview-panel">
+            <div id="cardPreview" class="card-preview">
+                <div class="card-content">
+                    <div class="website-info">
+                        <img class="website-icon" id="websiteIcon" alt="网站图标">
+                        <span class="website-name" id="websiteName"></span>
+                    </div>
+                    <div class="content-text" id="contentText"></div>
+                    <div class="card-footer">
+                        <div class="metadata">
+                            <span class="author" id="author"></span>
+                            <span class="timestamp" id="timestamp"></span>
+                        </div>
+                        <div class="qrcode" id="qrcode"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="lib/html2canvas.min.js"></script>
+    <script src="lib/jspdf.umd.min.js"></script>
+    <script>
+        // 等待 jsPDF 加载完成
+        window.addEventListener('load', function() {
+            if (typeof window.jspdf === 'undefined') {
+                console.error('jsPDF not loaded');
+                return;
+            }
+            // 初始化 jsPDF
+            window.jsPDF = window.jspdf.jsPDF;
+        });
+    </script>
+    <script src="scripts/card-generator.js"></script>
+</body>
+</html> 

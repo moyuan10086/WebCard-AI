@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "网页卡片生成器",
+  "description": "一键生成精美的网页内容分享卡片",
+  "version": "1.0.0",
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "contextMenus",
+    "clipboardWrite"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["content.css", "styles/card-generator.css"],
+      "js": [
+        "lib/html2canvas.min.js",
+        "lib/jspdf.umd.min.js",
+        "scripts/card-generator.js",
+        "content.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/icons/*.png",
+        "assets/fonts/*",
+        "assets/templates/*.png",
+        "card-generator.html",
+        "lib/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 

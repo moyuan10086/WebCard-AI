@@ -1,0 +1,41 @@
+/* 宋体 */
+@font-face {
+  font-family: 'SimSun';
+  src: local('SimSun');
+  font-display: swap;
+}
+
+/* 楷体 */
+@font-face {
+  font-family: 'KaiTi';
+  src: local('KaiTi');
+  font-display: swap;
+}
+
+/* 黑体 */
+@font-face {
+  font-family: 'SimHei';
+  src: local('SimHei');
+  font-display: swap;
+}
+
+/* 圆体 */
+@font-face {
+  font-family: 'YouYuan';
+  src: local('YouYuan');
+  font-display: swap;
+}
+
+/* 仿宋 */
+@font-face {
+  font-family: 'FangSong';
+  src: local('FangSong');
+  font-display: swap;
+}
+
+/* 微软雅黑 */
+@font-face {
+  font-family: 'Microsoft YaHei';
+  src: local('Microsoft YaHei');
+  font-display: swap;
+} 

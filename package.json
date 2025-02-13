@@ -1,0 +1,35 @@
+{
+  "name": "webpage-card-generator",
+  "version": "1.0.0",
+  "description": "Chrome扩展 - 网页卡片生成器",
+  "private": true,
+  "scripts": {
+    "generate:icons": "node assets/icons/generate_icons.js",
+    "generate:previews": "node assets/templates/generate_previews.js",
+    "convert:images": "node scripts/convert-svg-to-png.js",
+    "build:assets": "npm run generate:icons && npm run generate:previews && npm run convert:images"
+  },
+  "dependencies": {
+    "sharp": "^0.32.1",
+    "webpage-card-generator": "file:"
+  },
+  "devDependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "qrcode": "^1.5.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/webpage-card-generator.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "card-generator",
+    "webpage-sharing"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

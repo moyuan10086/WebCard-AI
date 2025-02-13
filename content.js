@@ -1,0 +1,396 @@
+/**
+ * @description 处理文本选择和浮动图标的主要逻辑
+ */
+class SelectionHandler {
+  constructor() {
+    this.floatingButton = null;
+    this.cardGenerator = null;
+    this.init();
+  }
+
+  /**
+   * @description 初始化函数
+   */
+  init() {
+    // 创建浮动按钮
+    this.createFloatingButton();
+    // 监听文本选择事件
+    document.addEventListener('mouseup', this.handleTextSelection.bind(this));
+    // 初始化卡片生成器
+    this.initCardGenerator();
+  }
+
+  /**
+   * @description 初始化卡片生成器
+   */
+  async initCardGenerator() {
+    // 等待CardGenerator类可用
+    if (typeof CardGenerator !== 'undefined') {
+      this.cardGenerator = new CardGenerator();
+    } else {
+      console.error('CardGenerator not found');
+    }
+  }
+
+  /**
+   * @description 获取网站图标URL
+   * @returns {string} 图标URL
+   */
+  getWebsiteIconUrl() {
+    // 首先尝试获取高清图标
+    const hdIcon = document.querySelector('link[rel="icon"][sizes="192x192"], link[rel="icon"][sizes="128x128"]');
+    if (hdIcon) {
+      return hdIcon.href;
+    }
+
+    // 然后尝试获取普通图标
+    const icon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+    if (icon) {
+      return icon.href;
+    }
+
+    // 如果都没有，使用Google的favicon服务
+    return `https://www.google.com/s2/favicons?domain=${window.location.hostname}&sz=64`;
+  }
+
+  /**
+   * @description 生成二维码URL
+   * @param {string} url - 需要生成二维码的URL
+   * @returns {Promise<string>} 二维码图片URL
+   */
+  async generateQRCode(url) {
+    const encodedUrl = encodeURIComponent(url);
+    
+    try {
+      // 首先尝试使用 Google Charts API
+      const googleQRUrl = `https://chart.googleapis.com/chart?cht=qr&chs=200x200&chld=M|0&chl=${encodedUrl}`;
+      
+      // 测试Google Charts API是否可用
+      const response = await fetch(googleQRUrl);
+      if (response.ok) {
+        return googleQRUrl;
+      }
+      
+      // 如果Google Charts API失败，使用备用服务 QR Server
+      console.log('Google Charts API失败，使用备用服务');
+      return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedUrl}`;
+      
+    } catch (error) {
+      console.error('生成二维码失败，使用备用服务:', error);
+      return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedUrl}`;
+    }
+  }
+
+  /**
+   * @description 创建浮动按钮
+   */
+  createFloatingButton() {
+    this.floatingButton = document.createElement('div');
+    this.floatingButton.className = 'card-generator-button';
+    
+    // 获取图标URL
+    const iconUrl = chrome.runtime.getURL('assets/icons/icon16.png');
+    this.floatingButton.innerHTML = `<img src="${iconUrl}" alt="复制卡片">`;
+    this.floatingButton.style.display = 'none';
+    
+    // 添加点击事件
+    this.floatingButton.addEventListener('click', async () => {
+      try {
+        const selection = window.getSelection();
+        const selectedText = selection.toString().trim();
+        
+        if (!selectedText) {
+          console.error('No text selected');
+          return;
+        }
+
+        // 添加加载状态
+        this.floatingButton.classList.add('loading');
+
+        // 获取网站图标
+        const websiteIconUrl = this.getWebsiteIconUrl();
+        
+        // 生成二维码
+        const qrCodeUrl = await this.generateQRCode(window.location.href);
+
+        // 准备卡片数据
+        const cardData = {
+          url: window.location.href,
+          title: document.title,
+          text: selectedText,
+          timestamp: new Date().toISOString(),
+          iconUrl: websiteIconUrl,
+          qrCodeUrl: qrCodeUrl
+        };
+
+        // 保存到storage
+        await chrome.storage.local.set({ cardData });
+
+        // 创建临时的卡片预览元素
+        const previewElement = document.createElement('div');
+        previewElement.style.position = 'fixed';
+        previewElement.style.left = '-9999px';
+        previewElement.style.top = '0';
+        
+        previewElement.innerHTML = `
+          <div class="card-preview">
+            <div class="card-content">
+              <div class="website-info">
+                <img class="website-icon" src="${websiteIconUrl}" alt="网站图标" crossorigin="anonymous">
+                <span class="website-name">${document.title}</span>
+              </div>
+              <div class="content-text">${selectedText}</div>
+              <div class="card-footer">
+                <div class="metadata">
+                  <span class="timestamp">${new Date().toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</span>
+                </div>
+                <div class="qrcode">
+                  <div class="qrcode-container">
+                    <img src="${qrCodeUrl}" alt="二维码" crossorigin="anonymous" 
+                      onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}';">
+                  </div>
+                </div>
+              </div>
+              <div class="watermark">Generated by moyuan</div>
+            </div>
+          </div>
+        `;
+
+        // 添加样式
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+          .card-preview {
+            width: 600px;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+          }
+          
+          .card-content {
+            padding: 32px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+          }
+          
+          .website-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          }
+          
+          .website-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: cover;
+          }
+          
+          .website-name {
+            font-size: 14px;
+            color: #666666;
+          }
+          
+          .content-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #2c2c2c;
+            margin: 24px 0;
+          }
+          
+          .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+          }
+          
+          .metadata {
+            font-size: 12px;
+            color: #666666;
+          }
+          
+          .qrcode {
+            width: 80px;
+            height: 80px;
+            padding: 6px;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+          }
+          
+          .qrcode-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+          }
+          
+          .qrcode img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+          }
+          
+          .qrcode-error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            color: #ff4d4f;
+            text-align: center;
+            white-space: nowrap;
+          }
+          
+          .qrcode-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid #4a90e2;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+          }
+          
+          @keyframes spin {
+            to {
+              transform: translate(-50%, -50%) rotate(360deg);
+            }
+          }
+          
+          .watermark {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.25);
+            padding: 4px 6px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            white-space: nowrap;
+            line-height: 1;
+            transform: scale(0.9);
+            transform-origin: bottom right;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          }
+        `;
+        previewElement.appendChild(styleElement);
+        document.body.appendChild(previewElement);
+
+        try {
+          // 使用html2canvas生成图片
+          const canvas = await html2canvas(previewElement.querySelector('.card-preview'), {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+          });
+
+          // 转换canvas为blob
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+          
+          // 复制到剪贴板
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'image/png': blob
+            })
+          ]);
+          
+          // 显示成功状态
+          this.floatingButton.classList.remove('loading');
+          this.floatingButton.classList.add('success');
+
+          // 2秒后隐藏按钮
+          setTimeout(() => {
+            this.hideFloatingButton();
+            this.floatingButton.classList.remove('success');
+          }, 2000);
+
+        } catch (error) {
+          console.error('Failed to copy image:', error);
+          throw error;
+        } finally {
+          // 清理临时元素
+          document.body.removeChild(previewElement);
+        }
+
+      } catch (error) {
+        console.error('Error handling button click:', error);
+        this.floatingButton.classList.remove('loading');
+        this.floatingButton.classList.add('error');
+        
+        setTimeout(() => {
+          this.floatingButton.classList.remove('error');
+        }, 2000);
+      }
+    });
+    
+    document.body.appendChild(this.floatingButton);
+  }
+
+  /**
+   * @description 处理文本选择事件
+   * @param {MouseEvent} event - 鼠标事件对象
+   */
+  handleTextSelection(event) {
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    
+    if (selectedText) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      
+      // 显示浮动按钮
+      this.showFloatingButton(rect);
+    } else {
+      this.hideFloatingButton();
+    }
+  }
+
+  /**
+   * @description 显示浮动按钮
+   * @param {DOMRect} rect - 选中文本的位置信息
+   */
+  showFloatingButton(rect) {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+    this.floatingButton.style.display = 'block';
+    this.floatingButton.style.top = `${rect.top + scrollTop - 30}px`;
+    this.floatingButton.style.left = `${rect.right + scrollLeft + 5}px`;
+  }
+
+  /**
+   * @description 隐藏浮动按钮
+   */
+  hideFloatingButton() {
+    if (this.floatingButton) {
+      this.floatingButton.style.display = 'none';
+    }
+  }
+}
+
+// 初始化选择处理器
+new SelectionHandler(); 
